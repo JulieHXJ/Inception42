@@ -17,3 +17,7 @@ comparison between:
 ◦ Secrets vs Environment Variables
 ◦ Docker Network vs Host Network
 ◦ Docker Volumes vs Bind Mounts
+
+
+
+https://medium.com/@imyzf/inception-3979046d90a0

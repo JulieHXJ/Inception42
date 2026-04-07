@@ -1,0 +1,11 @@
+# a file describing how multiple containers work together (services, networks, volumes, env vars).
+
+
+version: "3"
+
+services:
+  nginx:
+    build: .
+    ports:
+      - "8080:80"
+    
