@@ -1,11 +1,12 @@
-# a script describing how to build an image.
+FROM debian:bullseye 
 
-FROM alpine:3.19
+RUN apt-get update && apt-get install -y mariadb-server && rm -rf /var/lib/apt/lists/*
 
-# install packages, configure stuff
-RUN apk add --no-cache nginx
+COPY ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
+COPY ./tools/init.sh /init.sh
 
-# copy config files or scripts into image
-# COPY ./nginx.conf /etc/nginx/nginx.conf
+RUN chmod +x /init.sh
 
-CMD [ "nginx", "-g", "daemon off;" ]
+EXPOSE 3306
+
+CMD ["/init.sh"]

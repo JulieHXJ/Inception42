@@ -1,11 +1,60 @@
 # a file describing how multiple containers work together (services, networks, volumes, env vars).
 
-
-version: "3"
-
 services:
+  mariadb:
+    build: ./requirements/mariadb
+    container_name: mariadb
+    env_file:
+      - .env
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - inception
+    restart: always
+
+  wordpress:
+    build: ./requirements/wordpress
+    container_name: wordpress
+    env_file:
+      - .env
+    depends_on:
+      - mariadb
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - inception
+    restart: always
+
   nginx:
-    build: .
+    build: ./requirements/nginx
+    container_name: nginx
+    depends_on:
+      - wordpress
     ports:
-      - "8080:80"
-    
+      - "8443:443"
+    volumes:
+      # - nginx_conf:/etc/nginx/conf.d
+      - wordpress_data:/var/www/html
+    networks:
+      - inception
+    restart: always
+  
+
+volumes:
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/xhuang/data/mariadb
+
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/xhuang/data/wordpress
+
+networks:
+  inception:
+    driver: bridge
