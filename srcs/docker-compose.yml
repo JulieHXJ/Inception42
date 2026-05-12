@@ -9,7 +9,7 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
     networks:
-      - inception
+      - backend
     restart: always
 
   wordpress:
@@ -22,7 +22,8 @@ services:
     volumes:
       - wordpress_data:/var/www/html
     networks:
-      - inception
+      - backend
+      - frontend
     restart: always
 
   nginx:
@@ -31,12 +32,12 @@ services:
     depends_on:
       - wordpress
     ports:
-      - "8443:443"
+      - "443:443"
     volumes:
       # - nginx_conf:/etc/nginx/conf.d
       - wordpress_data:/var/www/html
     networks:
-      - inception
+      - frontend
     restart: always
   
 
@@ -56,5 +57,7 @@ volumes:
       device: /home/xhuang/data/wordpress
 
 networks:
-  inception:
+  backend:
+    driver: bridge
+  frontend:
     driver: bridge

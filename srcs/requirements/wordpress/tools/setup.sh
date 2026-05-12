@@ -5,9 +5,13 @@ mkdir -p /var/www/html
 
 cd /var/www/html
 
-until mariadb -hmariadb -u${MYSQL_USER} -p${MYSQL_PASSWORD} -e "SHOW DATABASES;" > /dev/null 2>&1; do
+echo "Waiting for MariaDB to be ready..."
+until mariadb -hmariadb -u${MYSQL_USER} -p${MYSQL_PASSWORD} -e "SHOW DATABASES;" > /dev/null 2>&1; 
+do
+	echo "MariaDB is not ready yet. Retrying in 2 seconds..."
 	sleep 2
 done
+echo "MariaDB is ready."
 
 if [ ! -f /var/www/html/wp-config.php ]; then
 	curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
