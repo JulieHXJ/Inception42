@@ -1,4 +1,4 @@
-# a file describing how multiple containers work together (services, networks, volumes, env vars).
+# define multiple containers (services, networks, volumes, env vars).
 
 services:
   mariadb:
@@ -6,6 +6,9 @@ services:
     container_name: mariadb
     env_file:
       - .env
+    secrets:
+      - mysql_password
+      - mysql_root_password
     volumes:
       - mariadb_data:/var/lib/mysql
     networks:
@@ -17,6 +20,11 @@ services:
     container_name: wordpress
     env_file:
       - .env
+    secrets:
+    - mysql_password
+      - mysql_root_password
+      - wp_admin_password
+      - wp_user_password
     depends_on:
       - mariadb
     volumes:
@@ -35,11 +43,23 @@ services:
       - "443:443"
     volumes:
       # - nginx_conf:/etc/nginx/conf.d
-      - wordpress_data:/var/www/html
+      - wordpress_data:/var/www/html:ro
     networks:
       - frontend
     restart: always
   
+secrets:
+  mysql_password:
+    file: ../secrets/mysql_password.txt
+
+  mysql_root_password:
+    file: ../secrets/mysql_root_password.txt
+
+  wp_admin_password:
+    file: ../secrets/wp_admin_password.txt
+
+  wp_user_password:
+    file: ../secrets/wp_user_password.txt
 
 volumes:
   mariadb_data:
@@ -50,10 +70,10 @@ volumes:
       device: /home/xhuang/data/mariadb
 
   wordpress_data:
-    driver: local
+    driver: local # vm local host storage
     driver_opts:
       type: none
-      o: bind
+      o: bind # Mount a file path from the host as a volume
       device: /home/xhuang/data/wordpress
 
 networks:
