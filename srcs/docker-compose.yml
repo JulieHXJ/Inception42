@@ -33,6 +33,15 @@ services:
       - backend
       - frontend
     restart: always
+  
+  personalpage:
+    build: ./requirements/personalpage
+    container_name: personalpage
+    networks:
+      - frontend
+    restart: always
+
+
 
   nginx:
     build: ./requirements/nginx
