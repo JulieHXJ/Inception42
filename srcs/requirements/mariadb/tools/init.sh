@@ -9,20 +9,32 @@ mkdir -p /run/mysqld
 chown -R mysql:mysql /run/mysqld
 chown -R mysql:mysql /var/lib/mysql
 
-# first time init db
+# create mariadb storage
 if [ ! -d "/var/lib/mysql/mysql" ]; then
     mysql-install-db --user=mysql --datadir=/var/lib/mysql
 fi
 
+# init wp database and wp user
+if [ ! -f "/var/lib/mysql/.mariadb_initialized" ]; then
 
-service mariadb start
+    mariadbd \
+        --user=mysql \
+        --datadir=/var/lib/mysql \
+        --skip-networking &
 
-# wait for MariaDB to be ready
-until mariadb-admin ping --silent; do
-    sleep 1
-done
+    TEMP_PID=$!
 
-mariadb -u root << EOF
+    # wait for MariaDB to be ready
+    until mariadb-admin \
+        --protocol=socket \
+        --socket=/run/mysqld/mysqld.sock \
+        ping --silent
+    do
+        sleep 1
+    done
+
+    mariadb --protocol=socket --socket=/run/mysqld/mysqld.sock -u root << EOF
+
 CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;
 
 CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%'
@@ -38,6 +50,17 @@ IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
 FLUSH PRIVILEGES;
 EOF
 
-mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} shutdown
 
-exec mysqld --user=mysql
+
+    # shutdown
+    mariadb-admin --protocol=socket --socket=/run/mysqld/mysqld.sock -u root -p"${MYSQL_ROOT_PASSWORD}" shutdown
+
+    wait "${TEMP_PID}"
+    touch /var/lib/mysql/.mariadb_initialized # marker: only after SQL succeeds.
+
+
+fi
+
+
+
+exec mysqld --user=mysql --datadir=/var/lib/mysql

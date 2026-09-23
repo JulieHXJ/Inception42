@@ -21,7 +21,7 @@ services:
     env_file:
       - .env
     secrets:
-    - mysql_password
+      - mysql_password
       - mysql_root_password
       - wp_admin_password
       - wp_user_password

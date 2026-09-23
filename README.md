@@ -142,6 +142,14 @@ included in the project. It must indicate the main design choices, as well as a
 comparison between:
 ### Virtual Machines vs Docker
 
+OS: Debian 12 / 64-bit
+RAM: 2 GB+
+CPU: 2
+Disk: 20–30 GB
+GUI: 不装
+Network: NAT
+
+
 A virtual machine emulates or virtualizes an entire machine environment and normally runs its own operating system kernel.
 
 A Docker container instead runs isolated processes while sharing the host Linux kernel.
@@ -226,7 +234,6 @@ The following resources were used to understand and implement the technologies u
 - WordPress Documentation
 - WP-CLI Documentation
 - OpenSSL Documentation
-- 42 Inception subject and evaluation requirements
 
 Useful official references:
 

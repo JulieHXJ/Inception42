@@ -1,16 +1,24 @@
 NAME = inception
 
+DATA_DIR = /home/xhuang/data
+MARIADB_DATA = $(DATA_DIR)/mariadb
+WORDPRESS_DATA = $(DATA_DIR)/wordpress
+
 all:
-	cd srcs && docker-compose up -d --build
+	mkdir -p $(MARIADB_DATA)
+	mkdir -p $(WORDPRESS_DATA)
+	cd srcs && docker compose up -d --build
 
 up:
-	cd srcs %% && docker-compose up -d
+	mkdir -p $(MARIADB_DATA)
+	mkdir -p $(WORDPRESS_DATA)
+	cd srcs && docker compose up -d
 
 down:
-	cd srcs && docker-compose down -v
+	cd srcs && docker compose down 
 
 clean:
-	cd srcs && docker-compose down -v --rmi all 
+	cd srcs && docker compose down --rmi all 
 
 fclean: clean
 
