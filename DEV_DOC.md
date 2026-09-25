@@ -4,6 +4,14 @@ This file must describe how a developer can:
 ◦ Use relevant commands to manage the containers and volumes.
 ◦ Identify where the project data is stored and how it persists
 
+
+prerequisites
+setup
+Makefile usage
+docker compose commands
+persistence
+development/rebuild procedure
+
 .env
 │
 ├── domain

@@ -23,6 +23,10 @@ do
 done
 echo "MariaDB is ready to accept SQL."
 
+
+
+# TODO: mariadb health check
+
 # install WordPress and configure db
 if [ ! -f /var/www/html/wp-config.php ]; then
 

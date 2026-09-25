@@ -2,6 +2,7 @@
 
 services:
   mariadb:
+    image: mariadb
     build: ./requirements/mariadb
     container_name: mariadb
     env_file:
@@ -16,6 +17,7 @@ services:
     restart: always
 
   wordpress:
+    image: wordpress
     build: ./requirements/wordpress
     container_name: wordpress
     env_file:
@@ -34,16 +36,10 @@ services:
       - frontend
     restart: always
   
-  personalpage:
-    build: ./requirements/personalpage
-    container_name: personalpage
-    networks:
-      - frontend
-    restart: always
-
 
 
   nginx:
+    image: nginx
     build: ./requirements/nginx
     container_name: nginx
     depends_on:
