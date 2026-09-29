@@ -14,7 +14,16 @@ services:
       - mariadb_data:/var/lib/mysql
     networks:
       - backend
-    restart: always
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mariadb-admin --protocol=socket --socket=/run/mysqld/mysqld.sock -u root -p\"$$(cat /run/secrets/mysql_root_password)\" ping --silent"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   wordpress:
     image: wordpress
@@ -28,13 +37,23 @@ services:
       - wp_admin_password
       - wp_user_password
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
     volumes:
       - wordpress_data:/var/www/html
     networks:
       - backend
       - frontend
-    restart: always
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "bash -c '</dev/tcp/127.0.0.1/9000'"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
   
 
 
@@ -43,15 +62,26 @@ services:
     build: ./requirements/nginx
     container_name: nginx
     depends_on:
-      - wordpress
+      wordpress:
+        condition: service_healthy
     ports:
       - "443:443"
     volumes:
-      # - nginx_conf:/etc/nginx/conf.d
       - wordpress_data:/var/www/html:ro
     networks:
       - frontend
-    restart: always
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-kfsS",
+          "https://127.0.0.1:443/"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
   
 secrets:
   mysql_password:
